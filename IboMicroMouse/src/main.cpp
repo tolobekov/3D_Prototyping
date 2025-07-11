@@ -16,7 +16,7 @@ MX1508 motor_right(MM::PINS::MOTOR_2_B, MM::PINS::MOTOR_2_A);
 double setpoint=0.0;
 double input;
 double output;
- double Kp=0.01;
+ double Kp=0.027;
  double Ki=0.0;
  double Kd=0.0;
  PID steering_pid(&input, &output, &setpoint, Kp,Ki,Kd, DIRECT);
@@ -42,14 +42,28 @@ Serial.begin();
 }
 
 void loop() {
-input = sl-sr;
-steering_pid.Compute();
-motor_left.motorGoP(30-output);
-motor_right.motorGoP(30+output);
-sfl= analogRead(MM::PINS::IR_1);
+ sfl= analogRead(MM::PINS::IR_1);
 sl= analogRead(MM::PINS::IR_2);
 sr=analogRead(MM::PINS::IR_3);
 sfr= analogRead(MM::PINS::IR_4);
-Serial.printf("sl: %d, sfl: %d, sr: %d, sfr: %d\n", sl,sfl,sr,sfr);
+Serial.printf("sl: %d, sfl: %d, sr: %d, sfr: %d\n", sl,sfl,sr,sfr);   
+
+input = sl-sr;
+steering_pid.Compute();
+int baseSpeed=25;
+
+int adjustSpeed = baseSpeed;
+
+if (sfl<50 && sfr<50){
+    adjustSpeed=baseSpeed+30;
+}
+else adjustSpeed=baseSpeed-4;
+motor_left.motorGoP(adjustSpeed-output);
+motor_right.motorGoP(adjustSpeed+output);
+if (sfl>780 && sfr >780 && sl> 780 && sr>780){
+    motor_left.motorBrake();
+    motor_right.motorBrake();
+    while(true);
+}
 
 }
