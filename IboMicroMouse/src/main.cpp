@@ -1,0 +1,40 @@
+#include <Arduino.h>
+#include <black_box.h>
+#include <FS_MX1508.h>
+#include <micromouse.h>
+
+unsigned long previous;
+bool pin_state=true;
+uint16_t sl;
+uint16_t sfl;
+uint16_t sr;
+uint16_t sfr;
+MX1508 motor_left(MM::PINS::MOTOR_1_A, MM::PINS::MOTOR_1_B);
+MX1508 motor_right(MM::PINS::MOTOR_2_B, MM::PINS::MOTOR_2_A);
+
+void setup() {
+pinMode(1, OUTPUT);
+pinMode(2, OUTPUT);
+pinMode(MM::PINS::MOTOR_DRV_EN, OUTPUT);
+digitalWrite(MM::PINS::MOTOR_DRV_EN, HIGH);
+pinMode(MM::PINS::IR_LED_1, OUTPUT);
+pinMode(MM::PINS::IR_LED_2, OUTPUT);
+pinMode(MM::PINS::IR_LED_3, OUTPUT);
+pinMode(MM::PINS::IR_LED_4, OUTPUT);
+digitalWrite(MM::PINS::IR_LED_1, HIGH);
+digitalWrite(MM::PINS::IR_LED_2, HIGH);
+digitalWrite(MM::PINS::IR_LED_3, HIGH);
+digitalWrite(MM::PINS::IR_LED_4, HIGH);
+
+Serial.begin();
+}
+
+void loop() {
+
+sfl= analogRead(MM::PINS::IR_1);
+sl= analogRead(MM::PINS::IR_2);
+sr=analogRead(MM::PINS::IR_3);
+sfr= analogRead(MM::PINS::IR_4);
+Serial.printf("sl: %d, sfl: %d, sr: %d, sfr: %d\n", sl,sfl,sr,sfr);
+delay(500);
+}
